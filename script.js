@@ -42,6 +42,7 @@
   let score;
   let lives;
   let gameOver;
+  let paused;
   let lastTime;
 
   function init() {
@@ -63,6 +64,7 @@
     score = 0;
     lives = START_LIVES;
     gameOver = false;
+    paused = false;
 
     spawnWave(5);
   }
@@ -146,7 +148,7 @@
   }
 
   function update(dt) {
-    if (!gameOver) {
+    if (!gameOver && !paused) {
       updateShip(dt);
       updateBullets(dt);
       updateAsteroids(dt);
@@ -342,6 +344,7 @@
     drawHUD();
 
     if (gameOver) drawGameOver();
+    if (paused && !gameOver) drawPauseOverlay();
   }
 
   function drawStars() {
@@ -442,6 +445,26 @@
       ctx.fillStyle = "#ffb0a0";
       ctx.fillText("SCHILD AKTIV", WIDTH - 190, 34);
     }
+
+    if (paused && !gameOver) {
+      ctx.fillStyle = "#ffdcae";
+      ctx.fillText("STATUS: ⏸ PAUSE", WIDTH - 220, 62);
+    }
+  }
+
+  function drawPauseOverlay() {
+    ctx.fillStyle = "rgba(5, 10, 18, 0.5)";
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    ctx.fillStyle = "#ffe0b8";
+    ctx.textAlign = "center";
+    ctx.font = '44px "Courier New", monospace';
+    ctx.fillText("⏸", WIDTH / 2, HEIGHT / 2 - 24);
+    ctx.font = '26px "Courier New", monospace';
+    ctx.fillText("PAUSE", WIDTH / 2, HEIGHT / 2 + 20);
+    ctx.font = '20px "Courier New", monospace';
+    ctx.fillText("Drücke P zum Fortsetzen", WIDTH / 2, HEIGHT / 2 + 56);
+    ctx.textAlign = "start";
   }
 
   function drawGameOver() {
@@ -488,6 +511,10 @@
 
     if (event.code === "Enter" && gameOver) {
       init();
+    }
+
+    if (event.code === "KeyP" && !gameOver) {
+      paused = !paused;
     }
   });
 
